@@ -58,7 +58,7 @@ jobs:
       # Étape 3 : Créer la documentation avec pdoc
       - name: Generate documentation
         run: |
-          mkdir -p docs
+
           pdoc src --output-dir docs
 
       # Étape 4 : Committer et pousser la documentation
