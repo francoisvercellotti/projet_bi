@@ -44,10 +44,7 @@ jobs:
       - name: Generate documentation with pdoc
         run: |
           mkdir -p docs
-          # Trouver tous les fichiers Python dans src et ses sous-dossiers
-          files=$(find src -name "*.py")
-          # Passer ces fichiers à pdoc
-          pdoc $files --output-dir docs
+          pdoc src/hello.py  --output-dir docs
       # Étape 7 : Téléverser la documentation (facultatif)
       # Pour héberger les fichiers de documentation via GitHub Pages
       - name: Deploy documentation to GitHub Pages
