@@ -44,7 +44,7 @@ jobs:
       - name: Generate documentation with pdoc
         run: |
           mkdir -p docs
-          pdoc src/*.py --output-dir docs
+          pdoc src/**/*.py --output-dir docs
 
 
       # Étape 7 : Téléverser la documentation (facultatif)
