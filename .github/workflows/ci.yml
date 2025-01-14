@@ -41,14 +41,17 @@ jobs:
           pytest
 
       # Étape 6 : Générer la documentation avec pdoc
-      - name: Generate documentation with pdoc
+      - name: Generate docs with pdoc
         run: |
-          cd docs
-          pdoc --output-dir docs src/*.py
-      # Étape 7 : Téléverser la documentation (facultatif)
-      # Pour héberger les fichiers de documentation via GitHub Pages
-      - name: Deploy documentation to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs
+          # Générer la documentation pour tous les fichiers Python dans src
+          find src -name "*.py" -exec pdoc {} --output-dir docs \;
+
+      - name: Commit and push docs
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/
+          git commit -m 'Update documentation'
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
