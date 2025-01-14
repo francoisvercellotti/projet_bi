@@ -26,9 +26,7 @@ jobs:
       # Étape 3: Créer un environnement virtuel et l'activer
       - name: Create and activate virtual environment
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          uv sync
+          uv pip sync requirements.txt
 
 
       # Étape 4: Vérifier que le fichier de test existe dans le bon répertoire
