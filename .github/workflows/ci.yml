@@ -1,0 +1,60 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main  # Cette action sera lancée à chaque push sur la branche 'main'
+  pull_request:
+    branches:
+      - main  # Cette action sera lancée lors de la création de PR vers 'main'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Le job s'exécute sur un runner Ubuntu
+
+    steps:
+      # Étape 1: Checkout du code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Étape 2: Configurer Python et installer les dépendances
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'  # Spécifier la version Python souhaitée
+
+      # Étape 3: Créer un environnement virtuel et installer les dépendances
+      - name: Set up uv environment and install dependencies
+        run: |
+          source .venv/bin/activate  # Active l'environnement virtuel
+          uv sync  # Synchroniser avec les dépendances définies dans pyproject.toml
+
+      # Étape 4: Lancer les tests (ajustez si vous utilisez pytest, unittest, etc.)
+      - name: Run tests
+        run: |
+          source .venv/bin/activate  # Active l'environnement virtuel
+          pytest  # Remplacez cette commande selon vos tests
+
+      # Étape 5: Vérifier le style de code avec flake8 (optionnel)
+      - name: Lint code with ruff
+        run: |
+          source .venv/bin/activate
+          ruff .  # Si ruff est installé, vérifie le style de code
+
+          # Étape 6: Générer la documentation avec pdoc
+      - name: Generate Documentation with pdoc
+        run: |
+          source .venv/bin/activate
+          pdoc --html --output-dir docs .  # Génère la documentation dans le répertoire 'docs'
+
+      # Étape 7: Déployer la documentation (optionnel, si vous voulez déployer avec GitHub Pages)
+      - name: Deploy Documentation to GitHub Pages
+        if: github.ref == 'refs/heads/main'  # Déploie uniquement sur la branche 'main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # Déployer les fichiers générés dans le dossier 'docs'
+          folder: docs
+          target_branch: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
