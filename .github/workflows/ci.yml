@@ -17,44 +17,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Étape 2: Configurer Python
+      # Étape 2: Configurer Python et installer les dépendances
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'  # Spécifier la version Python souhaitée
 
-      # Étape 3: Créer l'environnement virtuel et installer les dépendances
-      - name: Install dependencies
+      # Étape 3: Créer l'environnement virtuel et activer
+      - name: Create and activate virtual environment
         run: |
-          python -m venv .venv  # Crée un environnement virtuel
-          source .venv/bin/activate
-          uv export -o requirements.txt  # Exporte les dépendances
-          pip install -r requirements.txt  # Installe les dépendances
+          python -m venv .venv  # Crée l'environnement virtuel
+          source .venv/bin/activate  # Active l'environnement virtuel
 
-      # Étape 4: Lancer les tests
+      # Étape 4: Installer uv (si nécessaire)
+      - name: Install uv
+        run: |
+          pip install uv
+
+      # Étape 5: Exporter les dépendances avec uv et installer avec pip
+      - name: Export dependencies to requirements.txt using uv
+        run: |
+          source .venv/bin/activate  # Assurez-vous que l'environnement virtuel est activé
+          uv export -o requirements.txt  # Exporter les dépendances avec uv
+          pip install -r requirements.txt  # Installer les dépendances
+
+      # Étape 6: Lancer les tests (ajustez si vous utilisez pytest, unittest, etc.)
       - name: Run tests
         run: |
           source .venv/bin/activate  # Active l'environnement virtuel
-          pytest  # Lancer les tests avec pytest
+          pytest  # Remplacez cette commande selon vos tests
 
-      # Étape 5: Vérifier le style de code avec ruff
+      # Étape 7: Vérifier le style de code avec flake8 (optionnel)
       - name: Lint code with ruff
         run: |
           source .venv/bin/activate
-          ruff .  # Vérifie le style de code
+          ruff .  # Si ruff est installé, vérifie le style de code
 
-      # Étape 6: Générer la documentation avec pdoc
+      # Étape 8: Générer la documentation avec pdoc
       - name: Generate Documentation with pdoc
         run: |
           source .venv/bin/activate
           pdoc --html --output-dir docs .  # Génère la documentation dans le répertoire 'docs'
 
-      # Étape 7: Déployer la documentation sur GitHub Pages
+      # Étape 9: Déployer la documentation (optionnel, si vous voulez déployer avec GitHub Pages)
       - name: Deploy Documentation to GitHub Pages
         if: github.ref == 'refs/heads/main'  # Déploie uniquement sur la branche 'main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           folder: docs  # Déployer les fichiers générés dans le dossier 'docs'
-          target_branch: gh-pages
+          target_branch: gh-pages  # Déployer sur la branche gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
