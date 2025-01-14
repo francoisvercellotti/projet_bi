@@ -40,8 +40,13 @@ jobs:
       - name: Navigate to bi_project directory
         run: cd bi_project
 
-      - name: Run tests
-        run: pytest test_environment.py -v
+          # Étape 5: Lancer les tests (en précisant le chemin exact)
+      - name: Run tests with pytest
+        run: |
+          source .venv/bin/activate  # Assurez-vous que l'environnement virtuel est activé
+          echo "Environment activated"
+          pytest
+
       # Étape 6: Vérification du style de code (facultatif)
       - name: Lint code with ruff
         run: |
