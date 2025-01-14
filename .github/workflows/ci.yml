@@ -46,6 +46,9 @@ jobs:
           # Générer la documentation pour tous les fichiers Python dans src
           find src -name "*.py" -exec pdoc {} --output-dir docs \;
 
+          - name: Create .nojekyll file
+          run: touch docs/.nojekyll
+
       - name: Commit and push docs
         run: |
           git config --global user.name 'github-actions[bot]'
