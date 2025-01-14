@@ -44,7 +44,7 @@ jobs:
       - name: Generate documentation with pdoc
         run: |
           mkdir -p docs
-          pdoc src/hello.py  --output-dir docs
+          find $(pwd)/src -name "*.py" -exec pdoc {} --output-dir docs \;
       # Étape 7 : Téléverser la documentation (facultatif)
       # Pour héberger les fichiers de documentation via GitHub Pages
       - name: Deploy documentation to GitHub Pages
