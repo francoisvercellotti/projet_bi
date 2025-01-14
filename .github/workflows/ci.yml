@@ -3,10 +3,10 @@ name: CI Workflow
 on:
   push:
     branches:
-      - main  # Cette action sera lancée à chaque push sur la branche 'main'
+      - main
   pull_request:
     branches:
-      - main  # Cette action sera lancée lors de la création de PR vers 'main'
+      - main
 
 jobs:
   test:
@@ -21,50 +21,36 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11'  # Spécifier la version Python souhaitée
+          python-version: '3.11'
 
-      # Étape 3: Créer l'environnement virtuel et activer
+      # Étape 3: Créer un environnement virtuel et l'activer
       - name: Create and activate virtual environment
         run: |
-          python -m venv .venv  # Crée l'environnement virtuel
-          source .venv/bin/activate  # Active l'environnement virtuel
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-      # Étape 4: Installer uv (si nécessaire)
-      - name: Install uv
+      # Étape 4: Vérifier que le fichier de test existe dans le bon répertoire
+      - name: Check files in bi_project directory
         run: |
-          pip install uv
+          ls -al bi_project  # Liste les fichiers dans le répertoire 'bi_project'
+          ls -al bi_project/  # Si le fichier test_environment.py y est bien présent
 
-      # Étape 5: Exporter les dépendances avec uv et installer avec pip
-      - name: Export dependencies to requirements.txt using uv
+      # Étape 5: Lancer les tests (en précisant le chemin exact)
+      - name: Run tests with pytest
         run: |
           source .venv/bin/activate  # Assurez-vous que l'environnement virtuel est activé
-          uv export -o requirements.txt  # Exporter les dépendances avec uv
-          pip install -r requirements.txt  # Installer les dépendances
+          pytest bi_project/test_environment.py --maxfail=1 --disable-warnings -q
 
-      # Étape 6: Lancer les tests (ajustez si vous utilisez pytest, unittest, etc.)
-      - name: Run tests
-        run: |
-          source .venv/bin/activate  # Active l'environnement virtuel
-          pytest bi_project/ --maxfail=1 --disable-warnings -v  # Recherche dans tous les fichiers sous `bi_project/``
-
-      # Étape 7: Vérifier le style de code avec ruff (optionnel)
+      # Étape 6: Vérification du style de code (facultatif)
       - name: Lint code with ruff
         run: |
           source .venv/bin/activate
           ruff .  # Si ruff est installé, vérifie le style de code
 
-      # Étape 8: Générer la documentation avec pdoc
+      # Étape 7: Générer la documentation avec pdoc
       - name: Generate Documentation with pdoc
         run: |
           source .venv/bin/activate
           pdoc --html --output-dir docs .  # Génère la documentation dans le répertoire 'docs'
-
-      # Étape 9: Déployer la documentation (optionnel, si vous voulez déployer avec GitHub Pages)
-      - name: Deploy Documentation to GitHub Pages
-        if: github.ref == 'refs/heads/main'  # Déploie uniquement sur la branche 'main'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          folder: docs  # Déployer les fichiers générés dans le dossier 'docs'
-          target_branch: gh-pages  # Déployer sur la branche gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
