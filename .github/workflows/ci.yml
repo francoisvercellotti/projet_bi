@@ -40,30 +40,3 @@ jobs:
         run: |
           pytest
 
-  deploy-docs:
-    runs-on: ubuntu-latest
-    needs: test  # S'assurer que le job de tests passe avant de déployer les docs
-
-    steps:
-      # Étape 1 : Cloner le dépôt
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Étape 2 : Configurer Git
-      - name: Set up Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      # Étape 3 : Créer la documentation avec pdoc
-      - name: Generate documentation
-        run: |
-
-          pdoc src --output-dir docs
-
-      # Étape 4 : Committer et pousser la documentation
-      - name: Commit and push documentation
-        run: |
-          git add docs/*
-          git commit -m "Update documentation"
-          git push
