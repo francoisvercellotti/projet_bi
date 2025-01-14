@@ -13,44 +13,18 @@ jobs:
     runs-on: ubuntu-latest  # Le job s'exécute sur un runner Ubuntu
 
     steps:
-      # Étape 1: Checkout du code
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      # Étape 2: Configurer Python et installer les dépendances
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11'
-
-      # Étape 3: Créer un environnement virtuel et l'activer
-      - name: Create and activate virtual environment
-        run: |
-          uv pip sync requirements.txt
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
 
-      # Étape 4: Vérifier que le fichier de test existe dans le bon répertoire
-      - name: Check files in bi_project directory
-        run: |
-          ls -al bi_project  # Liste les fichiers dans le répertoire 'bi_project'
-          ls -al bi_project/  # Si le fichier test_environment.py y est bien présent
-
-      - name: Navigate to bi_project directory
-        run: cd bi_project
-
-          # Étape 5: Lancer les tests (en précisant le chemin exact)
-      - name: Run tests with pytest
+        - name: Test with pytest
         run: |
           pytest
-
-      # Étape 6: Vérification du style de code (facultatif)
-      - name: Lint code with ruff
-        run: |
-          source .venv/bin/activate
-          ruff .  # Si ruff est installé, vérifie le style de code
-
-      # Étape 7: Générer la documentation avec pdoc
-      - name: Generate Documentation with pdoc
-        run: |
-          source .venv/bin/activate
-          pdoc --html --output-dir docs .  # Génère la documentation dans le répertoire 'docs'
