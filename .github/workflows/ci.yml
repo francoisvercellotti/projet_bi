@@ -41,20 +41,18 @@ jobs:
           pytest
 
       # Étape 6 : Générer la documentation avec pdoc
-      - name: Generate docs with pdoc
+      - name: Clean docs directory
+        run: rm -rf docs/*  # Supprimer les anciens fichiers de documentation
+
+      - name: Generate documentation
         run: |
-          # Générer la documentation pour tous les fichiers Python dans src
+          mkdir -p docs
           find src -name "*.py" -exec pdoc {} --output-dir docs \;
 
-          - name: Create .nojekyll file
-          run: touch docs/.nojekyll
-
-      - name: Commit and push docs
+      - name: Commit and push documentation
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add docs/
-          git commit -m 'Update documentation'
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/*
+          git commit -m "Update documentation"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
