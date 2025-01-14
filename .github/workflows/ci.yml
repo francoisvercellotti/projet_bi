@@ -41,6 +41,7 @@ jobs:
       - name: Run tests with pytest
         run: |
           source .venv/bin/activate  # Assurez-vous que l'environnement virtuel est activé
+          echo "Environment activated"
           pytest bi_project/test_environment.py --maxfail=1 --disable-warnings -q
 
       # Étape 6: Vérification du style de code (facultatif)
