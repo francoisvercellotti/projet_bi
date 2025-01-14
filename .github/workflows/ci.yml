@@ -30,6 +30,7 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
+          uv sync
 
       # Étape 4: Vérifier que le fichier de test existe dans le bon répertoire
       - name: Check files in bi_project directory
