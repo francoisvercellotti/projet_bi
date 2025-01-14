@@ -10,52 +10,31 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Le job s'exécute sur un runner Ubuntu
+    runs-on: ubuntu-latest  # Exécution sur un runner Ubuntu
 
     steps:
       # Étape 1: Checkout du code
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4  # Utilisation de la version 4 de checkout action
 
-      # Étape 2: Configurer Python et installer les dépendances
+      # Étape 2: Configuration de Python
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5  # Utilisation de la version 5 de setup-python
         with:
-          python-version: '3.11'
+          python-version: '3.x'  # Vous pouvez spécifier la version exacte comme '3.11' si nécessaire
 
-      # Étape 3: Créer un environnement virtuel et l'activer
-      - name: Create and activate virtual environment
+      # Étape 3: Installation des dépendances
+      - name: Install dependencies
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          uv sync
+          python -m pip install --upgrade pip  # Mise à jour de pip
+          pip install -r requirements.txt  # Installation des dépendances depuis requirements.txt
 
-      # Étape 4: Vérifier que le fichier de test existe dans le bon répertoire
-      - name: Check files in bi_project directory
+      # Étape 4: Installation de pytest et pytest-cov pour la couverture de tests
+      - name: Install pytest and pytest-cov
         run: |
-          ls -al bi_project  # Liste les fichiers dans le répertoire 'bi_project'
-          ls -al bi_project/  # Si le fichier test_environment.py y est bien présent
+          pip install pytest pytest-cov  # Installation de pytest et du plugin de couverture
 
-      - name: Navigate to bi_project directory
-        run: cd bi_project
-
-          # Étape 5: Lancer les tests (en précisant le chemin exact)
-      - name: Run tests with pytest
+      # Étape 5: Lancer les tests avec pytest
+      - name: Test with pytest
         run: |
-          source .venv/bin/activate  # Assurez-vous que l'environnement virtuel est activé
-          echo "Environment activated"
-          pytest
-
-      # Étape 6: Vérification du style de code (facultatif)
-      - name: Lint code with ruff
-        run: |
-          source .venv/bin/activate
-          ruff .  # Si ruff est installé, vérifie le style de code
-
-      # Étape 7: Générer la documentation avec pdoc
-      - name: Generate Documentation with pdoc
-        run: |
-          source .venv/bin/activate
-          pdoc --html --output-dir docs .  # Génère la documentation dans le répertoire 'docs'
+          pytest bi_project/test_environment.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+          # Ici, vous pouvez spécifier le fichier de test exact ou un répertoire de tests complet
