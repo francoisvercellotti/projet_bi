@@ -13,20 +13,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Étape 1 : Cloner le dépôt
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Étape 2 : Configurer Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      # Étape 3 : Installer les dépendances
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
+          pip install pytest ruff pdoc
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      # Étape 4 : Linting avec Ruff
+      - name: Lint code with Ruff
+        run: |
+          ruff check .
 
+      # Étape 5 : Exécuter les tests avec pytest
       - name: Test with pytest
         run: |
           pytest
+
+      # Étape 6 : Générer la documentation avec pdoc
+      - name: Generate documentation with pdoc
+        run: |
+          mkdir -p docs
+          pdoc --output-dir docs .
+
+      # Étape 7 : Téléverser la documentation (facultatif)
+      # Pour héberger les fichiers de documentation via GitHub Pages
+      - name: Deploy documentation to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
