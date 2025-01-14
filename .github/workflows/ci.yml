@@ -45,9 +45,9 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate  # Active l'environnement virtuel
-          pytest bi_project/test_environment.py --maxfail=1 --disable-warnings -v  # Recherche dans `test_environment.py`
+          pytest bi_project/ --maxfail=1 --disable-warnings -v  # Recherche dans tous les fichiers sous `bi_project/``
 
-      # Étape 7: Vérifier le style de code avec flake8 (optionnel)
+      # Étape 7: Vérifier le style de code avec ruff (optionnel)
       - name: Lint code with ruff
         run: |
           source .venv/bin/activate
