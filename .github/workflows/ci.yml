@@ -42,7 +42,7 @@ jobs:
         run: |
           source .venv/bin/activate  # Assurez-vous que l'environnement virtuel est activé
           echo "Environment activated"
-          pytest -v --no-cache-dir
+          pytest -v
 
       # Étape 6: Vérification du style de code (facultatif)
       - name: Lint code with ruff
