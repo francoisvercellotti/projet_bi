@@ -17,44 +17,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Étape 2: Configurer Python et installer les dépendances
+      # Étape 2: Configurer Python
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'  # Spécifier la version Python souhaitée
 
-      # Étape 3: Créer un environnement virtuel et installer les dépendances
-      - name: Set up uv environment and install dependencies
+      # Étape 3: Créer l'environnement virtuel et installer les dépendances
+      - name: Install dependencies
         run: |
-          source .venv/bin/activate  # Active l'environnement virtuel
-          uv sync  # Synchroniser avec les dépendances définies dans pyproject.toml
+          python -m venv .venv  # Crée un environnement virtuel
+          source .venv/bin/activate
+          uv export -o requirements.txt  # Exporte les dépendances
+          pip install -r requirements.txt  # Installe les dépendances
 
-      # Étape 4: Lancer les tests (ajustez si vous utilisez pytest, unittest, etc.)
+      # Étape 4: Lancer les tests
       - name: Run tests
         run: |
           source .venv/bin/activate  # Active l'environnement virtuel
-          pytest  # Remplacez cette commande selon vos tests
+          pytest  # Lancer les tests avec pytest
 
-      # Étape 5: Vérifier le style de code avec flake8 (optionnel)
+      # Étape 5: Vérifier le style de code avec ruff
       - name: Lint code with ruff
         run: |
           source .venv/bin/activate
-          ruff .  # Si ruff est installé, vérifie le style de code
+          ruff .  # Vérifie le style de code
 
-          # Étape 6: Générer la documentation avec pdoc
+      # Étape 6: Générer la documentation avec pdoc
       - name: Generate Documentation with pdoc
         run: |
           source .venv/bin/activate
           pdoc --html --output-dir docs .  # Génère la documentation dans le répertoire 'docs'
 
-      # Étape 7: Déployer la documentation (optionnel, si vous voulez déployer avec GitHub Pages)
+      # Étape 7: Déployer la documentation sur GitHub Pages
       - name: Deploy Documentation to GitHub Pages
         if: github.ref == 'refs/heads/main'  # Déploie uniquement sur la branche 'main'
         uses: peaceiris/actions-gh-pages@v3
         with:
-          # Déployer les fichiers générés dans le dossier 'docs'
-          folder: docs
+          folder: docs  # Déployer les fichiers générés dans le dossier 'docs'
           target_branch: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
